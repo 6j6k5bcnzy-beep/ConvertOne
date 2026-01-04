@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "ConvertOne",
+    "slug": "ConvertOne",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/TheIcon.png",
+    "scheme": "appconvertisseur",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.ethan.universel",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/TheIcon.png",
+        "backgroundImage": "./assets/images/TheIcon.png",
+        "monochromeImage": "./assets/images/TheIcon.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ethan.universel"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/TheIcon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/TheIcon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7b05c3b1-0b06-4377-b2ed-9fa78ac4d773"
+      }
+    },
+    "owner": "darstein_ethan"
+  }
+}
