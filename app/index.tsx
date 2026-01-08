@@ -241,7 +241,7 @@ export default function Index() {
     null
   );
 
-  // ✅ 1. Charger les favoris au lancement
+  // ✅ 1. Charger les favoris aux lancement
   useEffect(() => {
     const loadFavorites = async () => {
       try {
