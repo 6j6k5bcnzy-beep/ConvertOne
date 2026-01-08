@@ -25,9 +25,11 @@ export function formatNumber(
   }
 
 
-  return value
-    .toFixed(maxDecimals)
-    .replace(/\.?0+$/, ""); 
+  const formatted = value
+  .toFixed(maxDecimals)
+  .replace(/\.?0+$/, "");
+
+return formatThousands(formatted);
 }
 
 function formatExponent(exp: number) {
@@ -50,4 +52,10 @@ function formatExponent(exp: number) {
     .split("")
     .map((c) => superscripts[c] || c)
     .join("");
+}
+
+function formatThousands(value: string) {
+  const [int, dec] = value.split(".");
+  const formattedInt = int.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return dec ? `${formattedInt}.${dec}` : formattedInt;
 }

@@ -28,6 +28,7 @@ import { parseLocalizedNumber } from "@/utils/number";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { formatNumber } from "@/utils/formatNumber";
 import * as Clipboard from "expo-clipboard";
+import AnimatedBackground from "../utils/AnimatedBackground";
 
 export default function Index() {
   const normalize = (text: string) =>
@@ -145,6 +146,7 @@ export default function Index() {
 
   const categories = Object.keys(conversions);
   const [category, setCategory] = useState(categories[0]);
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
   const modes = Object.keys(conversions[category]);
   const [mode, setMode] = useState(modes[0]);
@@ -189,6 +191,20 @@ export default function Index() {
     }
   };
 
+  useEffect(() => {
+    if (!isCategoryLoaded) return;
+
+    const saveCategory = async () => {
+      try {
+        await AsyncStorage.setItem("favoriteCategory", category);
+      } catch (e) {
+        console.log("Erreur sauvegarde catégorie", e);
+      }
+    };
+
+    saveCategory();
+  }, [category, isCategoryLoaded]);
+
   const [copied, setCopied] = useState(false);
 
   const copyResult = async () => {
@@ -202,38 +218,107 @@ export default function Index() {
   };
 
   const [favorites, setFavorites] = useState<string[]>([]); // utilisé pour le TRI
-  const [visualFavorites, setVisualFavorites] = useState<string[]>([]); // étoiles
-  useEffect(() => {
-    AsyncStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
 
   const toggleFavorite = (mode: string) => {
-    const isFavorite = visualFavorites.includes(mode);
+    const isFav = favorites.includes(mode);
 
-    if (isFavorite) {
-      Haptics.selectionAsync();
-      setVisualFavorites((prev) => prev.filter((m) => m !== mode));
+    Haptics.selectionAsync();
+
+    if (isFav) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setFavorites((prev) => prev.filter((m) => m !== mode));
       return;
     }
 
-    // ⭐ feedback visuel immédiat
-    Haptics.selectionAsync();
-    setVisualFavorites((prev) => [...prev, mode]);
-
-    // ⏱️ déplacement animé
-    setTimeout(() => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
-      setFavorites((prev) => [...prev, mode]);
-    }, 90);
+    // feedback visuel immédiat + animation
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setFavorites((prev) => [...prev, mode]);
   };
 
-  const isFavorite = (mode: string) => visualFavorites.includes(mode);
+  const isFavorite = (mode: string) => favorites.includes(mode);
 
   const [pendingFavoriteMove, setPendingFavoriteMove] = useState<string | null>(
     null
   );
+
+  // ✅ 1. Charger les favoris au lancement
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("favorites");
+        if (stored) {
+          setFavorites(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.log("Erreur chargement favoris", e);
+      }
+    };
+
+    loadFavorites();
+  }, []);
+
+  // ✅ 2. Sauvegarder à chaque changement
+  useEffect(() => {
+    const saveFavorites = async () => {
+      try {
+        await AsyncStorage.setItem("favorites", JSON.stringify(favorites));
+      } catch (e) {
+        console.log("Erreur sauvegarde favoris", e);
+      }
+    };
+
+    saveFavorites();
+  }, [favorites]);
+
+  useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        const storedLang = await AsyncStorage.getItem("language");
+        if (storedLang === "fr" || storedLang === "en") {
+          setLanguage(storedLang);
+        }
+      } catch (e) {
+        console.log("Erreur chargement langue", e);
+      }
+    };
+
+    loadLanguage();
+  }, []);
+
+  useEffect(() => {
+    const saveLanguage = async () => {
+      try {
+        await AsyncStorage.setItem("language", language);
+      } catch (e) {
+        console.log("Erreur sauvegarde langue", e);
+      }
+    };
+
+    saveLanguage();
+  }, [language]);
+
+  useEffect(() => {
+    const loadCategory = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("favoriteCategory");
+
+        if (stored && conversions[stored]) {
+          setCategory(stored);
+
+          const modes = Object.keys(conversions[stored]);
+          if (modes.length > 0) {
+            setMode(modes[0]);
+          }
+        }
+      } catch (e) {
+        console.log("Erreur chargement catégorie", e);
+      } finally {
+        setIsCategoryLoaded(true);
+      }
+    };
+
+    loadCategory();
+  }, []);
 
   const sortedModes = [
     ...favorites.filter((f) => filteredModes.includes(f)),
@@ -241,232 +326,244 @@ export default function Index() {
   ];
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#333a5dff" }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <Pressable style={{ flex: 5 }} onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          {/* TITRE */}
-          <Animated.View
-            style={[
-              styles.titleContainer,
-              {
-                transform: [{ translateY }],
-              },
-            ]}
-          >
-            <Text style={styles.subtitle}>Universel</Text>
-            <Text style={styles.title}>{t.title}</Text>
-          </Animated.View>
+    <View style={{ flex: 1 }}>
+      {/* 🌌 FOND ABSOLU PLEIN ÉCRAN */}
+      <AnimatedBackground />
 
-          <View style={styles.langSwitch}>
-            <Pressable
+      {/* 📱 CONTENU */}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            {/* TITRE */}
+            <Animated.View
               style={[
-                styles.langBtn,
-                language === "fr" && styles.langBtnActive,
+                styles.titleContainer,
+                {
+                  transform: [{ translateY }],
+                },
               ]}
-              onPress={() => changeLanguage("fr")}
             >
-              <Text style={styles.flag}>🇫🇷</Text>
-              <Text
-                style={[
-                  styles.langText,
-                  language === "fr" && styles.langTextActive,
-                ]}
-              >
-                FR
-              </Text>
-            </Pressable>
+              <Text style={styles.subtitle}>Universel</Text>
+              <Text style={styles.title}>{t.title}</Text>
+            </Animated.View>
 
-            <Pressable
-              style={[
-                styles.langBtn,
-                language === "en" && styles.langBtnActive,
-              ]}
-              onPress={() => changeLanguage("en")}
-            >
-              <Text style={styles.flag}>🇬🇧</Text>
-              <Text
-                style={[
-                  styles.langText,
-                  language === "en" && styles.langTextActive,
-                ]}
-              >
-                EN
-              </Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.card}>
-            {/* HAUT : choix */}
-            <View style={styles.topRow}>
+            <View style={styles.langSwitch}>
               <Pressable
-                style={styles.selectBox}
-                onPress={() => setShowCategoryModal(true)}
+                style={[
+                  styles.langBtn,
+                  language === "fr" && styles.langBtnActive,
+                ]}
+                onPress={() => changeLanguage("fr")}
               >
-                <Text style={styles.selectText}>
-                  {t.categories[category as keyof typeof t.categories]}
+                <Text style={styles.flag}>🇫🇷</Text>
+                <Text
+                  style={[
+                    styles.langText,
+                    language === "fr" && styles.langTextActive,
+                  ]}
+                >
+                  FR
                 </Text>
               </Pressable>
 
               <Pressable
-                style={styles.selectBox}
-                onPress={() => setShowModeModal(true)}
+                style={[
+                  styles.langBtn,
+                  language === "en" && styles.langBtnActive,
+                ]}
+                onPress={() => changeLanguage("en")}
               >
-                <Text style={styles.selectText}>
-                  {formatModeLabel(mode, language)}
+                <Text style={styles.flag}>🇬🇧</Text>
+                <Text
+                  style={[
+                    styles.langText,
+                    language === "en" && styles.langTextActive,
+                  ]}
+                >
+                  EN
                 </Text>
               </Pressable>
             </View>
 
-            {/* VALEUR ENTRÉE */}
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              placeholder={t.enterValue}
-              placeholderTextColor="#64748B"
-              value={value}
-              onChangeText={setValue}
-            />
+            <View style={styles.card}>
+              {/* HAUT : choix */}
+              <View style={styles.topRow}>
+                <Pressable
+                  style={styles.selectBox}
+                  onPress={() => setShowCategoryModal(true)}
+                >
+                  <Text style={styles.selectText}>
+                    {t.categories[category as keyof typeof t.categories]}
+                  </Text>
+                </Pressable>
 
-            {/* FLÈCHES */}
-            <View style={styles.arrowsRow}>
-              <Text style={styles.arrow}>↓</Text>
-
-              <Pressable
-                onPress={invertMode}
-                style={({ pressed }) => [
-                  styles.swapButton,
-                  pressed && { transform: [{ scale: 0.92 }], opacity: 0.8 },
-                ]}
-              >
-                <Text style={styles.swapIcon}>⇄</Text>
-              </Pressable>
-            </View>
-
-            {/* RÉSULTAT */}
-            <View style={styles.resultBox}>
-              <Text style={styles.resultText}>
-                {result === "" ? "—" : result}
-              </Text>
-            </View>
-          </View>
-
-          {/* MODAL CATÉGORIE */}
-          <Modal visible={showCategoryModal} transparent animationType="slide">
-            <Pressable
-              style={styles.modalOverlay}
-              onPress={() => setShowCategoryModal(false)}
-            >
-              <View style={styles.modalContent}>
-                {categories.map((cat) => (
-                  <Pressable
-                    key={cat}
-                    style={styles.modalItem}
-                    onPress={() => {
-                      setCategory(cat);
-                      setMode(Object.keys(conversions[cat])[0]);
-                      setShowCategoryModal(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>
-                      {t.categories[cat as keyof typeof t.categories]}
-                    </Text>
-                  </Pressable>
-                ))}
+                <Pressable
+                  style={styles.selectBox}
+                  onPress={() => setShowModeModal(true)}
+                >
+                  <Text style={styles.selectText}>
+                    {formatModeLabel(mode, language)}
+                  </Text>
+                </Pressable>
               </View>
-            </Pressable>
-          </Modal>
 
-          {/* MODAL MODE */}
-          <Modal visible={showModeModal} transparent animationType="slide">
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
-              style={{ flex: 1 }}
+              {/* VALEUR ENTRÉE */}
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                placeholder={t.enterValue}
+                placeholderTextColor="#64748B"
+                value={value}
+                onChangeText={setValue}
+              />
+
+              {/* FLÈCHES */}
+              <View style={styles.arrowsRow}>
+                <Text style={styles.arrow}>↓</Text>
+
+                <Pressable
+                  onPress={invertMode}
+                  style={({ pressed }) => [
+                    styles.swapButton,
+                    pressed && { transform: [{ scale: 0.92 }], opacity: 0.8 },
+                  ]}
+                >
+                  <Text style={styles.swapIcon}>⇄</Text>
+                </Pressable>
+              </View>
+
+              {/* RÉSULTAT */}
+              <View style={styles.resultBox}>
+                <Text style={styles.resultText}>
+                  {result === "" ? "—" : result}
+                </Text>
+              </View>
+            </View>
+
+            {/* MODAL CATÉGORIE */}
+            <Modal
+              visible={showCategoryModal}
+              transparent
+              animationType="slide"
             >
               <Pressable
                 style={styles.modalOverlay}
-                onPress={() => {
-                  Keyboard.dismiss();
-                  setShowModeModal(false);
-                }}
+                onPress={() => setShowCategoryModal(false)}
               >
-                <View style={styles.dragHandle} />
-                <Animated.View
-                  style={[
-                    styles.modalContent,
-                    { transform: [{ translateY: sheetY }] },
-                  ]}
-                  {...panResponder.panHandlers}
+                <View style={styles.modalContent}>
+                  {categories.map((cat) => (
+                    <Pressable
+                      key={cat}
+                      style={styles.modalItem}
+                      onPress={() => {
+                        setCategory(cat);
+                        setMode(Object.keys(conversions[cat])[0]);
+                        setShowCategoryModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItemText}>
+                        {t.categories[cat as keyof typeof t.categories]}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </Pressable>
+            </Modal>
+
+            {/* MODAL MODE */}
+            <Modal visible={showModeModal} transparent animationType="slide">
+              <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                style={{ flex: 1 }}
+              >
+                <Pressable
+                  style={styles.modalOverlay}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    setShowModeModal(false);
+                  }}
                 >
-                  {/* barre de recherche */}
-                  <TextInput
-                    style={styles.searchInput}
-                    placeholder={t.search}
-                    placeholderTextColor="#64748B"
-                    value={searchMode}
-                    onChangeText={setSearchMode}
-                    autoFocus
-                  />
+                  <View style={styles.dragHandle} />
+                  <Animated.View
+                    style={[
+                      styles.modalContent,
+                      { transform: [{ translateY: sheetY }] },
+                    ]}
+                    {...panResponder.panHandlers}
+                  >
+                    {/* barre de recherche */}
+                    <TextInput
+                      style={styles.searchInput}
+                      placeholder={t.search}
+                      placeholderTextColor="#64748B"
+                      value={searchMode}
+                      onChangeText={setSearchMode}
+                      autoFocus
+                    />
 
-                  {/* liste */}
+                    {/* liste */}
 
-                  <FlatList
-                    data={sortedModes}
-                    keyExtractor={(item) => item}
-                    keyboardShouldPersistTaps="handled"
-                    onScroll={(e) => {
-                      scrollY.current = e.nativeEvent.contentOffset.y;
-                    }}
-                    scrollEventThrottle={16}
-                    renderItem={({ item }) => (
-                      <Pressable
-                        style={styles.modalItem}
-                        onPress={() => {
-                          setMode(item);
-                          setShowModeModal(false);
-                          setSearchMode("");
-                        }}
-                      >
-                        <View style={styles.modeRow}>
-                          <Text style={styles.modalItemText}>
-                            {formatModeLabel(item, language)}
-                          </Text>
+                    <FlatList
+                      data={sortedModes}
+                      keyExtractor={(item) => item}
+                      keyboardShouldPersistTaps="handled"
+                      onScroll={(e) => {
+                        scrollY.current = e.nativeEvent.contentOffset.y;
+                      }}
+                      scrollEventThrottle={16}
+                      renderItem={({ item }) => (
+                        <Pressable
+                          style={styles.modalItem}
+                          onPress={() => {
+                            setMode(item);
+                            setShowModeModal(false);
+                            setSearchMode("");
+                          }}
+                        >
+                          <View style={styles.modeRow}>
+                            <Text style={styles.modalItemText}>
+                              {formatModeLabel(item, language)}
+                            </Text>
 
-                          <Pressable
-                            onPress={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(item);
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 25,
-                                color: isFavorite(item) ? "#FACC15" : "#CBD5E1",
-                                transform: [
-                                  {
-                                    scale:
-                                      item === pendingFavoriteMove ? 1.2 : 1,
-                                  },
-                                ],
+                            <Pressable
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(item);
                               }}
                             >
-                              {isFavorite(item) ? "★" : "☆"}
-                            </Text>
-                          </Pressable>
-                        </View>
-                      </Pressable>
-                    )}
-                    style={{ maxHeight: 300 }}
-                  />
-                </Animated.View>
-              </Pressable>
-            </KeyboardAvoidingView>
-          </Modal>
-        </View>
-      </Pressable>
-    </KeyboardAvoidingView>
+                              <Text
+                                style={{
+                                  fontSize: 25,
+                                  color: isFavorite(item)
+                                    ? "#FACC15"
+                                    : "#CBD5E1",
+                                  transform: [
+                                    {
+                                      scale:
+                                        item === pendingFavoriteMove ? 1.2 : 1,
+                                    },
+                                  ],
+                                }}
+                              >
+                                {isFavorite(item) ? "★" : "☆"}
+                              </Text>
+                            </Pressable>
+                          </View>
+                        </Pressable>
+                      )}
+                      style={{ maxHeight: 300 }}
+                    />
+                  </Animated.View>
+                </Pressable>
+              </KeyboardAvoidingView>
+            </Modal>
+          </View>
+        </Pressable>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -474,7 +571,7 @@ const { height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#333a5dff",
+    backgroundColor: "transparent",
     padding: 20,
     justifyContent: "center",
   },

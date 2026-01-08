@@ -58,6 +58,7 @@ export const conversions: Conversions = {
     m_to_dam: v => v / 10,
     m_to_hm: v => v / 100,
     m_to_km: v => v / 1000,
+    m_to_angstrom: v => v * 1e10,
 
     m_to_inches: v => v / 0.0254,
     m_to_feet: v => v / 0.3048,
@@ -71,6 +72,7 @@ export const conversions: Conversions = {
     mm_to_dam: v => v / 10_000,
     mm_to_hm: v => v / 100_000,
     mm_to_km: v => v / 1_000_000,
+    mm_to_angstrom: v => v * 1e7,
 
     mm_to_inches: v => v / 25.4,
 
@@ -81,6 +83,7 @@ export const conversions: Conversions = {
     cm_to_dam: v => v / 1000,
     cm_to_hm: v => v / 10_000,
     cm_to_km: v => v / 100_000,
+    cm_to_angstrom: v => v * 1e8,
 
     cm_to_inches: v => v / 2.54,
     cm_to_feet: v => v / 30.48,
@@ -92,6 +95,7 @@ export const conversions: Conversions = {
     dm_to_dam: v => v / 100,
     dm_to_hm: v => v / 1000,
     dm_to_km: v => v / 10_000,
+    dm_to_angstrom: v => v * 1e9,
 
     /* ===== DECAMETRE ===== */
     dam_to_mm: v => v * 10_000,
@@ -100,6 +104,7 @@ export const conversions: Conversions = {
     dam_to_m: v => v * 10,
     dam_to_hm: v => v / 10,
     dam_to_km: v => v / 100,
+    dam_to_angstrom: v => v * 1e11,
 
     /* ===== HECTOMETRE ===== */
     hm_to_mm: v => v * 100_000,
@@ -108,6 +113,7 @@ export const conversions: Conversions = {
     hm_to_m: v => v * 100,
     hm_to_dam: v => v * 10,
     hm_to_km: v => v / 10,
+    hm_to_angstrom: v => v * 1e12,
 
     /* ===== KILOMETRE ===== */
     km_to_mm: v => v * 1_000_000,
@@ -116,8 +122,17 @@ export const conversions: Conversions = {
     km_to_m: v => v * 1000,
     km_to_dam: v => v * 100,
     km_to_hm: v => v * 10,
+    km_to_angstrom: v => v * 1e13,
 
     km_to_miles: v => v / 1.609344,
+
+    /* ===== ANGSTRÖM ===== */
+    angstrom_to_m: v => v * 1e-10,
+    angstrom_to_mm: v => v * 1e-7,
+    angstrom_to_cm: v => v * 1e-8,
+    angstrom_to_dm: v => v * 1e-9,
+    angstrom_to_km: v => v * 1e-13,
+
     /* ================= US → METRIQUE ================= */
     inches_to_mm: v => v * 25.4,
     inches_to_cm: v => v * 2.54,
