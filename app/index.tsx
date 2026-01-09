@@ -325,6 +325,42 @@ export default function Index() {
     ...filteredModes.filter((m) => !favorites.includes(m)),
   ];
 
+  const [fromUnit, toUnit] = useMemo(() => {
+    if (!mode.includes("_to_")) return ["", ""];
+
+    const [from, to] = mode.split("_to_");
+    return [from, to];
+  }, [mode]);
+
+  const fromUnitLabel = t.units[fromUnit] ?? fromUnit;
+  const toUnitLabel = t.units[toUnit] ?? toUnit;
+
+  const inputRef = useRef<TextInput>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const caretOpacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (isFocused) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(caretOpacity, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(caretOpacity, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      caretOpacity.setValue(0);
+    }
+  }, [isFocused]);
+
   return (
     <View style={{ flex: 1 }}>
       {/* 🌌 FOND ABSOLU PLEIN ÉCRAN */}
@@ -411,14 +447,46 @@ export default function Index() {
               </View>
 
               {/* VALEUR ENTRÉE */}
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                placeholder={t.enterValue}
-                placeholderTextColor="#64748B"
-                value={value}
-                onChangeText={setValue}
-              />
+              <Pressable
+                style={styles.fakeInputContainer}
+                onPress={() => inputRef.current?.focus()}
+              >
+                <View style={styles.fakeInputRow}>
+                  {(value !== "" || !isFocused) && (
+                    <Text
+                      style={[
+                        styles.fakeInputText,
+                        value === "" && { color: "#64748B" },
+                      ]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.6}
+                    >
+                      {value === "" ? t.enterValue : value}
+                    </Text>
+                  )}
+
+                  {isFocused && (
+                    <Animated.View
+                      style={[styles.caret, { opacity: caretOpacity }]}
+                    />
+                  )}
+
+                  {value !== "" && (
+                    <Text style={styles.fakeInputUnit}> {fromUnitLabel}</Text>
+                  )}
+                </View>
+
+                <TextInput
+                  ref={inputRef}
+                  value={value}
+                  onChangeText={setValue}
+                  keyboardType="numeric"
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  style={styles.realInput}
+                />
+              </Pressable>
 
               {/* FLÈCHES */}
               <View style={styles.arrowsRow}>
@@ -437,9 +505,20 @@ export default function Index() {
 
               {/* RÉSULTAT */}
               <View style={styles.resultBox}>
-                <Text style={styles.resultText}>
-                  {result === "" ? "—" : result}
-                </Text>
+                <View style={styles.resultRow}>
+                  <Text
+                    style={styles.resultText}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.4}
+                  >
+                    {result === "" ? "—" : result}
+                  </Text>
+
+                  {result !== "" && (
+                    <Text style={styles.resultUnit}>{toUnitLabel}</Text>
+                  )}
+                </View>
               </View>
             </View>
 
@@ -618,8 +697,71 @@ const styles = StyleSheet.create({
     color: "#1E293B",
     borderWidth: 2,
     borderColor: "#6378f1ff",
-    marginBottom: 7,
     textAlign: "center",
+  },
+
+  inputWithUnit: {
+    paddingRight: 9, // espace réservé pour l’unité
+  },
+
+  inputContainer: {
+    width: "100%",
+    minHeight: 56,
+    position: "relative",
+    marginBottom: 7,
+  },
+
+  inputUnit: {
+    position: "absolute",
+    right: 16,
+    top: "50%",
+    transform: [{ translateY: -12 }],
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#475569",
+  },
+
+  fakeInputContainer: {
+    backgroundColor: "#f8e9e9ff",
+    borderRadius: 12,
+    paddingVertical: 16,
+    borderWidth: 2,
+    borderColor: "#6378f1ff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 7,
+  },
+
+  fakeInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  fakeInputText: {
+    fontSize: 22,
+    color: "#1E293B",
+    fontWeight: "500",
+    maxWidth: "70%",
+  },
+
+  fakeInputUnit: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#475569",
+  },
+
+  realInput: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0,
+    fontSize: 22,
+  },
+
+  caret: {
+    width: 2,
+    height: 26,
+    backgroundColor: "#1E293B",
+    marginHorizontal: 2,
   },
 
   /* FLÈCHE */
@@ -641,6 +783,8 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "bold",
     color: "#FFFFFF",
+    textAlign: "center",
+    maxWidth: "85%",
   },
 
   /* MODAL */
@@ -781,5 +925,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  unitText: {
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1E293B",
+  },
+
+  resultRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+  },
+
+  resultUnit: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#E0E7FF",
+    marginBottom: 6,
   },
 });

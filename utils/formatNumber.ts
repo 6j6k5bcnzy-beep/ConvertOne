@@ -9,7 +9,7 @@ export function formatNumber(
   const {
     maxDecimals = 6,
     scientificMin = 1e-6,
-    scientificMax = 1e9,
+    scientificMax = 1e6,
   } = options || {};
 
   if (value === 0) return "0";

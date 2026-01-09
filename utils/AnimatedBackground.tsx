@@ -32,7 +32,7 @@ export default function AnimatedBackground() {
 
   return (
     <AnimatedLinearGradient
-      colors={["#020617", "#0e1a39ff", "#4338CA", "#302c99ff"]}
+      colors={["#020617", "#0e1a39ff", "#4338CA", "#18174fff"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[
