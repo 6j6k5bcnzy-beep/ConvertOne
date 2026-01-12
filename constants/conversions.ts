@@ -530,4 +530,48 @@ AREA: {
   yd2_to_m2: v => v / 1.1959900463,
   acre_to_m2: v => v * 4046.8564224,
 },
+
+DATA: {
+  /* ===== BIT ===== */
+  bit_to_byte: v => v / 8,
+  bit_to_kb: v => v / (8 * 1024),
+  bit_to_mb: v => v / (8 * 1024 ** 2),
+  bit_to_gb: v => v / (8 * 1024 ** 3),
+
+  /* ===== BYTE ===== */
+  byte_to_bit: v => v * 8,
+  byte_to_kb: v => v / 1024,
+  byte_to_mb: v => v / (1024 ** 2),
+  byte_to_gb: v => v / (1024 ** 3),
+  byte_to_tb: v => v / (1024 ** 4),
+
+  /* ===== KILOBYTE ===== */
+  kb_to_bit: v => v * 1024 * 8,
+  kb_to_byte: v => v * 1024,
+  kb_to_mb: v => v / 1024,
+  kb_to_gb: v => v / (1024 ** 2),
+  kb_to_tb: v => v / (1024 ** 3),
+
+  /* ===== MEGABYTE ===== */
+  mb_to_bit: v => v * 1024 ** 2 * 8,
+  mb_to_byte: v => v * 1024 ** 2,
+  mb_to_kb: v => v * 1024,
+  mb_to_gb: v => v / 1024,
+  mb_to_tb: v => v / (1024 ** 2),
+
+  /* ===== GIGABYTE ===== */
+  gb_to_bit: v => v * 1024 ** 3 * 8,
+  gb_to_byte: v => v * 1024 ** 3,
+  gb_to_kb: v => v * 1024 ** 2,
+  gb_to_mb: v => v * 1024,
+  gb_to_tb: v => v / 1024,
+
+  /* ===== TERABYTE ===== */
+  tb_to_bit: v => v * 1024 ** 4 * 8,
+  tb_to_byte: v => v * 1024 ** 4,
+  tb_to_kb: v => v * 1024 ** 3,
+  tb_to_mb: v => v * 1024 ** 2,
+  tb_to_gb: v => v * 1024,
+}
+
 };

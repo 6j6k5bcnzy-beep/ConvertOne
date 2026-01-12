@@ -16,6 +16,7 @@ export const translations = {
       ENERGY: "Energy",
       TIME: "Time",
       AREA: "Area",
+      DATA: "Data",
     },
 
     
@@ -37,6 +38,12 @@ export const translations = {
   // --- TEMPERATURE ---
   c: "Celsius",
   f: "Fahrenheit",
+  k: "Kelvin",
+  r: "Rankine",
+  re: "Réaumur",
+  de: "Delisle",
+  n: "Newton",
+  ro: "Rømer",
 
   // --- MASS ---
   kg: "Kilograms",
@@ -96,6 +103,16 @@ export const translations = {
     ft2: "feet²",
     yd2: "yards²",
     acre: "Acres",
+
+    /* ===== DATA / STORAGE ===== */
+    bit: "Bits",
+    byte: "Bytes",
+
+    kb: "Kilobytes (KB)",
+    mb: "Megabytes (MB)",
+    gb: "Gigabytes (GB)",
+    tb: "Terabytes (TB)",
+
     }as Record<string, string>,
   },
 
@@ -116,6 +133,7 @@ export const translations = {
       ENERGY: "Énergie",
       TIME: "Temps",
       AREA: "Surface",
+      DATA: "Données",
     },
 
     units: {
@@ -134,6 +152,12 @@ export const translations = {
   // --- TEMPÉRATURE ---
   c: "Celsius",
   f: "Fahrenheit",
+  k: "Kelvin",
+  r: "Rankine",
+  re: "Réaumur",
+  de: "Delisle",
+  n: "Newton",
+  ro: "Rømer",
 
   // --- MASSE ---
   kg: "Kilogrammes",
@@ -193,6 +217,16 @@ export const translations = {
     ft2: "Pieds²",
     yd2: "Yards²",
     acre: "Acres",
+
+    /* ===== DONNÉES / STOCKAGE ===== */
+    bit: "Bits",
+    byte: "Octets",
+
+    kb: "Kilooctets (Ko)",
+    mb: "Mégaoctets (Mo)",
+    gb: "Gigaoctets (Go)",
+    tb: "Téraoctets (To)",
+
     }as Record<string, string>,
   },
 };
