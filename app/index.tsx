@@ -31,7 +31,9 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-const adUnitId = TestIds.BANNER;
+const adUnitId = __DEV__
+  ? TestIds.BANNER
+  : "ca-app-pub-6942695227282452/3269197482";
 
 export function Ad() {
   return (
@@ -524,14 +526,16 @@ export default function Index() {
                 {/* RÉSULTAT */}
                 <View style={styles.resultBox}>
                   <View style={styles.resultRow}>
-                    <Text
-                      style={styles.resultText}
-                      numberOfLines={1}
-                      adjustsFontSizeToFit
-                      minimumFontScale={0.4}
-                    >
-                      {result === "" ? "—" : result}
-                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={styles.resultText}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.4}
+                      >
+                        {result === "" ? "—" : result}
+                      </Text>
+                    </View>
 
                     {result !== "" && (
                       <Text style={styles.resultUnit}>{toUnitLabel}</Text>
