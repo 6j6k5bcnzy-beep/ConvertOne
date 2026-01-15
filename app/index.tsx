@@ -31,12 +31,6 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-import mobileAds from "react-native-google-mobile-ads";
-
-mobileAds().setRequestConfiguration({
-  testDeviceIdentifiers: ["EMULATOR", "ABCDEF123456"],
-});
-
 const adUnitId = TestIds.BANNER;
 
 export function Ad() {
