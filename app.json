@@ -2,7 +2,7 @@
   "expo": {
     "name": "ConvertOne",
     "slug": "ConvertOne",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "orientation": "portrait",
     "icon": "./assets/images/TheIcon.png",
     "scheme": "appconvertisseur",
@@ -12,14 +12,13 @@
       "bundleIdentifier": "com.ethan.universel",
       "supportsTablet": true,
       "infoPlist": {
-        "GADApplicationIdentifier":"ca-app-pub-6942695227282452~1099626887",
+        "GADApplicationIdentifier": "ca-app-pub-6942695227282452~1099626887",
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads."
       },
       "config": {
-      "googleMobileAdsAppId": "ca-app-pub-6942695227282452~1099626887"
-    }
-    
+        "googleMobileAdsAppId": "ca-app-pub-6942695227282452~1099626887"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,8 +28,8 @@
         "monochromeImage": "./assets/images/TheIcon.png"
       },
       "config": {
-      "googleMobileAdsAppId": "ca-app-pub-6942695227282452~1099626887"
-    },
+        "googleMobileAdsAppId": "ca-app-pub-6942695227282452~1099626887"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.ethan.universel"

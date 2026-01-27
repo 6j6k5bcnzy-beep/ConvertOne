@@ -92,7 +92,7 @@ export default function Index() {
           }).start();
         }
       },
-    })
+    }),
   ).current;
 
   const getSearchableText = (mode: string, lang: "fr" | "en") => {
@@ -109,7 +109,7 @@ export default function Index() {
         from,
         to,
         mode, // kg_to_g
-      ].join(" ")
+      ].join(" "),
     );
   };
 
@@ -159,15 +159,31 @@ export default function Index() {
           duration: 8000,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, []);
 
-  const categories = Object.keys(conversions);
+  const formatCategoryLabel = (key: string, lang: "fr" | "en") => {
+    return t.categories[key as keyof typeof t.categories];
+  };
+
+  const categories = Object.keys(conversions).sort((a, b) =>
+    formatCategoryLabel(a, language).localeCompare(
+      formatCategoryLabel(b, language),
+      language,
+    ),
+  );
+
   const [category, setCategory] = useState(categories[0]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
-  const modes = Object.keys(conversions[category]);
+  const modes = Object.keys(conversions[category]).sort((a, b) =>
+    formatModeLabel(a, language).localeCompare(
+      formatModeLabel(b, language),
+      language,
+    ),
+  );
+
   const [mode, setMode] = useState(modes[0]);
 
   const [value, setValue] = useState("");
@@ -257,7 +273,7 @@ export default function Index() {
   const isFavorite = (mode: string) => favorites.includes(mode);
 
   const [pendingFavoriteMove, setPendingFavoriteMove] = useState<string | null>(
-    null
+    null,
   );
 
   // ✅ 1. Charger les favoris aux lancement
@@ -373,7 +389,7 @@ export default function Index() {
             duration: 500,
             useNativeDriver: true,
           }),
-        ])
+        ]),
       ).start();
     } else {
       caretOpacity.setValue(0);
