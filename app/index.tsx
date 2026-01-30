@@ -42,7 +42,7 @@ export function Ad() {
         unitId={adUnitId}
         size={BannerAdSize.BANNER}
         requestOptions={{
-          requestNonPersonalizedAdsOnly: false,
+          requestNonPersonalizedAdsOnly: true,
         }}
       />
     </View>

@@ -13,8 +13,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "GADApplicationIdentifier": "ca-app-pub-6942695227282452~1099626887",
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads."
+        "ITSAppUsesNonExemptEncryption": false
       },
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-6942695227282452~1099626887"
